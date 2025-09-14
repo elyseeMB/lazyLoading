@@ -1,5 +1,4 @@
 import { createBrowserRouter, type RouteObject } from "react-router";
-import Home from "./pages/Home.tsx";
 import { createLazy } from "./tools/react-lazy.tsx";
 import { Simulator } from "./utils/Simulator.tsx";
 
