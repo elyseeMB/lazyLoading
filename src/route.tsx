@@ -14,7 +14,7 @@ const chunkSimulator = new Simulator();
 const routes = [
   {
     path: "/",
-    Component: Home,
+    Component: createLazy(() => import("./pages/Home.tsx")),
   },
   {
     path: "/faile",

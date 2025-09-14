@@ -1,69 +1,54 @@
-# React + TypeScript + Vite
+# Enhanced React Lazy Loading Demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Demo project showcasing an improved React lazy loading implementation that handles chunk loading failures in production environments.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This demo accompanies my blog article about solving chunk loading issues in React SPAs. The enhanced lazy loading automatically handles:
 
-## Expanding the ESLint configuration
+- Chunk loading failures after deployments
+- Automatic page reload with retry limits
+- Network retry logic for temporary issues
+- Transparent user experience
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Quick Start
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```bash
+# Install dependencies
+pnpm install
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start development server
+pnpm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Demo Features
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Chunk Simulator
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Interactive chunk failure simulation to demonstrate the problem and solution in action.
+
+### Test Routes
+
+- `/` - Home page with standard lazy loading
+- `/faile` - faile page that simulates chunk loading scenarios
+
+## Usage Example
+
+```javascript
+import { createLazy } from "./tools/react-lazy";
+
+// Enhanced lazy loading with automatic error handling
+const LazyComponent = createLazy(() => import("./MyComponent"), {
+  maxRetries: 3, // Reload attempts
+  importRetries: 3, // Network retry attempts
+  retryDelay: 300, // Delay between retries (ms)
+});
 ```
+
+## Article
+
+This demo supports my blog article: **Lazy Loading React Amélioré**
+
+---
+
+_Built to demonstrate real-world solutions for production React applications._
