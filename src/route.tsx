@@ -1,8 +1,4 @@
-import {
-  createBrowserRouter,
-  createHashRouter,
-  type RouteObject,
-} from "react-router";
+import { createHashRouter, type RouteObject } from "react-router";
 import { createLazy } from "./tools/react-lazy.tsx";
 import { Simulator } from "./utils/Simulator.tsx";
 
