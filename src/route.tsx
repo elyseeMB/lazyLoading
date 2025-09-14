@@ -1,4 +1,8 @@
-import { createBrowserRouter, type RouteObject } from "react-router";
+import {
+  createBrowserRouter,
+  createHashRouter,
+  type RouteObject,
+} from "react-router";
 import { createLazy } from "./tools/react-lazy.tsx";
 import { Simulator } from "./utils/Simulator.tsx";
 
@@ -43,9 +47,4 @@ const routes = [
   },
 ] satisfies RouteObject[];
 
-window.testDeploy = () => {
-  chunkSimulator.deploy();
-  console.log("deploy");
-};
-
-export const router = createBrowserRouter(routes);
+export const router = createHashRouter(routes);

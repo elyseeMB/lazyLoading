@@ -1,6 +1,6 @@
 export function Navigation() {
   const handleNavigate = (path: string) => {
-    window.location.href = "/" + path;
+    window.location.href = `#/${path}`;
   };
 
   return (
