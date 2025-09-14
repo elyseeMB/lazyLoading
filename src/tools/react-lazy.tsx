@@ -3,7 +3,6 @@ import { lazy as reactLazy, type ComponentType, type FC } from "react";
 type Options = {
   maxRetries: number;
   importRetries: number;
-
   retryDelay: number;
 };
 
@@ -18,34 +17,33 @@ export function createLazy(
   /**
    * Retry feature
    *
-   * On crée une fonction avec une signature similaire à ce que doit retourner createLazy()
+   * We create a function with a signature similar to what createLazy() should return
    */
   const tryImport = async (): Promise<{ default: ComponentType<any> }> => {
     /**
-     * On initialise le compteur
+     * Initialize the retry counter
      */
     let retryCount: number = 0;
 
     /**
-     * Fonction interne pour gérer le retry d'import.
-     * On encapsule attempt pour que retryCount soit local à chaque appel
-     * et éviter de partager l'état entre plusieurs imports.
-     * Ainsi, on a une fonction locale qui gère son propre état et ses manipulations.
+     * Internal function to handle import retries.
+     * We wrap it in 'attempt' so that retryCount is local to each call
+     * and we avoid sharing state between multiple imports.
+     * This way, we have a local function managing its own state and operations.
      */
     const attempt = async (): Promise<{ default: ComponentType<any> }> => {
       try {
         return await importFunction();
       } catch (error) {
         /**
-         * Si le nombre de reprises est inférieur à l'argument mis en paramètre (qui était de 3),
-         * on incrémente et réexécute la fonction (récursivité)
+         * If the retry count is less than the parameter provided (default is 3),
+         * increment it and retry the function (recursion)
          */
         if (retryCount < importRetries) {
           retryCount++;
           /**
-           * On marque un temps d'arrêt pour chaque reprise
+           * Pause for the specified delay before retrying
            */
-
           if (retryDelay > 0) {
             await new Promise((resolve) => setTimeout(resolve, retryDelay));
           }
@@ -54,7 +52,7 @@ export function createLazy(
         }
 
         /**
-         * En cas d'échec répété, on arrête et on renvoie l'erreur
+         * If all retries fail, throw the error
          */
         throw error;
       }
@@ -64,35 +62,34 @@ export function createLazy(
   };
 
   /**
-   * Gestion du reload automatique
+   * Automatic reload handling
    */
   return reactLazy(async () => {
     /**
-     * On utilise la signature de la fonction comme clé pour le sessionStorage.
-     * On la transforme en chaîne de caractères pour créer un identifiant unique.
+     * Use the function's string representation as a key in sessionStorage.
+     * Convert it to a string to create a unique identifier.
      */
     const functionString = importFunction.toString();
 
     try {
       /**
-       * Ici on exécute la fonction tryImport qui importe notre composant
-       * et fait des traitements au préalable avant de faire un reload
+       * Execute tryImport to import the component
+       * and handle pre-processing before any reload
        */
       const component = await tryImport();
 
       /**
-       * En cas de succès, on supprime au préalable la clé du sessionStorage
-       * pour une réinitialisation propre lors du prochain échec éventuel
+       * On success, remove the sessionStorage key
+       * for a clean reset in case of future failures
        */
       sessionStorage.removeItem(functionString);
 
       return component;
     } catch (error) {
       /**
-       * On récupère la valeur stockée dans le sessionStorage avec la clé "functionString".
-       * Ensuite on la compare à notre paramètre maxRetries.
-       * Si elle est inférieure à maxRetries, on l'incrémente jusqu'à ce qu'elle devienne supérieure.
-       * Puis on rafraîchit la page avec window.location.reload().
+       * Get the stored value from sessionStorage using the "functionString" key.
+       * Compare it to maxRetries. If it is less than maxRetries, increment it
+       * and reload the page using window.location.reload().
        */
       const currentFailures = parseInt(
         sessionStorage.getItem(functionString) || "0"
@@ -106,16 +103,16 @@ export function createLazy(
         window.location.reload();
 
         /**
-         * React.lazy() attend une Promise qui se résout vers { default: Component }.
-         * Ici c'est un placeholder qui ne sera jamais affiché car la page se recharge.
-         * On retourne une signature similaire à l'API React.lazy().
+         * React.lazy() expects a Promise that resolves to { default: Component }.
+         * Here we return a placeholder that will never be displayed
+         * because the page reloads immediately.
          */
         const EmptyComponent: FC = () => null;
         return { default: EmptyComponent };
       }
 
       /**
-       * Si on a dépassé le nombre maximum de tentatives, on propage l'erreur
+       * If the maximum retries are exceeded, propagate the error
        */
       throw error;
     }

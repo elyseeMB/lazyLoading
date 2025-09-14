@@ -20,7 +20,7 @@ export class Simulator {
   deploy() {
     const oldHash = this.deployedHash;
     this.deployedHash = this.generateHash();
-    console.log(`🚀 Déploiement: ${oldHash} → ${this.deployedHash}`);
+    console.log(`Déploiement: ${oldHash} → ${this.deployedHash}`);
     return { oldHash, newHash: this.deployedHash };
   }
 
@@ -28,7 +28,7 @@ export class Simulator {
     const Component: ComponentType<any> = () => {
       return createElement("div", {}, [
         createElement("h3", { key: "title" }, `Component: ${name}`),
-        createElement("p", { key: "paragraph" }, `Hash: ${hash}`), // ✅ Espace ajouté
+        createElement("p", { key: "paragraph" }, `Hash: ${hash}`),
         createElement(
           "span",
           { key: "time" },
@@ -39,12 +39,11 @@ export class Simulator {
 
     Component.displayName = name;
     this.components.set(`${name}-${hash}`, Component);
-    return Component; // ✅ Retourner le composant
+    return Component;
   }
 
   simulatorImport(name: string) {
     return new Promise<{ default: ComponentType<any> }>((resolve, reject) => {
-      // ✅ reject corrigé
       setTimeout(() => {
         const requestKey = `${name}-${this.currentHash}`;
 
@@ -55,7 +54,7 @@ export class Simulator {
 
         let component = this.components.get(requestKey);
         if (!component) {
-          component = this.createComponent(name, this.currentHash); // ✅ Utiliser currentHash
+          component = this.createComponent(name, this.currentHash);
         }
 
         resolve({ default: component });
@@ -65,10 +64,9 @@ export class Simulator {
 
   updateClientHash() {
     this.currentHash = this.deployedHash;
-    console.log(`🔄 Client mis à jour vers hash: ${this.currentHash}`);
+    console.log(`Update: ${this.currentHash}`);
   }
 
-  // ✅ Méthode utilitaire pour debug
   getStatus() {
     return {
       clientHash: this.currentHash,

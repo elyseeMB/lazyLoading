@@ -39,7 +39,7 @@ const routes = [
   {
     path: "/test",
     loader: () => chunkSimulator.deploy(),
-    Component: createLazy(() => chunkSimulator.simulatorImport("voiture")),
+    Component: createLazy(() => chunkSimulator.simulatorImport("page 1")),
   },
 ] satisfies RouteObject[];
 
